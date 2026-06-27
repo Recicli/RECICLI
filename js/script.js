@@ -1,6 +1,4 @@
 import { APP, NAV_LINKS } from "./config.js";
-import { initChatbot } from "./chatbot.js";
-import { getSupabaseUser } from "./supabaseClient.js";
 
 export const isPage = () => location.pathname.includes("/pages/");
 export const basePath = () => isPage() ? "../" : "./";
@@ -13,10 +11,10 @@ export function layout(title = "EcoRed") {
   const chatbot = document.querySelector("[data-chatbot]");
   if (nav) nav.innerHTML = renderNavbar();
   if (footer) footer.innerHTML = renderFooter();
-  if (chatbot) chatbot.innerHTML = renderChatbotShell();
+  if (chatbot) chatbot.innerHTML = "";
   bindNavbar();
   hydrateNavbarSession();
-  initChatbot();
+  initExternalChatbot();
 }
 
 function renderNavbar() {
@@ -72,18 +70,55 @@ function renderFooter() {
     </div>`;
 }
 
-function renderChatbotShell() {
-  return `
-    <div class="chatbot">
-      <div class="chat-window" id="chatWindow">
-        <div class="chat-head">EcO, asistente ambiental</div>
-        <div class="chat-body" id="chatBody">
-          <div class="chat-msg">Hola, soy EcO. Tengo hojitas y respuestas rapidas para ayudarte en EcoRed.</div>
-        </div>
-        <div class="chat-quick" id="chatQuick"></div>
-      </div>
-      <button class="chat-toggle" id="chatToggle" aria-label="Abrir chatbot">EcO</button>
-    </div>`;
+function shouldLoadExternalChatbot() {
+  const path = window.location.pathname.toLowerCase();
+  return !path.includes("/pages/login.html") && !path.includes("/pages/registro.html") && !path.includes("/pages/reutiliza.html");
+}
+
+function initExternalChatbot() {
+  if (!shouldLoadExternalChatbot() || window.__ecoredChatbaseInitialized) return;
+  window.__ecoredChatbaseInitialized = true;
+
+  const chatbaseSnippet = `
+    (function () {
+      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+        window.chatbase = function () {
+          if (!window.chatbase.q) {
+            window.chatbase.q = [];
+          }
+          window.chatbase.q.push(arguments);
+        };
+        window.chatbase = new Proxy(window.chatbase, {
+          get: function (target, prop) {
+            if (prop === "q") {
+              return target.q;
+            }
+            return function () {
+              return target(prop, ...arguments);
+            };
+          }
+        });
+      }
+
+      var onLoad = function () {
+        var script = document.createElement("script");
+        script.src = "https://www.chatbase.co/embed.min.js";
+        script.id = "EzPhHmEOcb1AKTcCNYgMv";
+        script.domain = "www.chatbase.co";
+        document.body.appendChild(script);
+      };
+
+      if (document.readyState === "complete") {
+        onLoad();
+      } else {
+        window.addEventListener("load", onLoad, { once: true });
+      }
+    })();
+  `;
+
+  const snippet = document.createElement("script");
+  snippet.textContent = chatbaseSnippet;
+  document.body.appendChild(snippet);
 }
 
 function bindNavbar() {
@@ -129,14 +164,20 @@ function bindNavbar() {
 
 async function hydrateNavbarSession() {
   if (localStorage.getItem(APP.storageUserKey)) return;
-  const user = await getSupabaseUser();
-  if (!user?.email) return;
-  localStorage.setItem(APP.storageUserKey, user.email);
-  localStorage.setItem(APP.storageRoleKey, user.user_metadata?.rol || "usuario");
-  document.querySelectorAll(".eco-login-cta").forEach((link) => {
-    link.textContent = "Perfil";
-    link.setAttribute("href", `${basePath()}pages/perfil.html`);
-  });
+
+  try {
+    const { getSupabaseUser } = await import("./supabaseClient.js");
+    const user = await getSupabaseUser();
+    if (!user?.email) return;
+    localStorage.setItem(APP.storageUserKey, user.email);
+    localStorage.setItem(APP.storageRoleKey, user.user_metadata?.rol || "usuario");
+    document.querySelectorAll(".eco-login-cta").forEach((link) => {
+      link.textContent = "Perfil";
+      link.setAttribute("href", `${basePath()}pages/perfil.html`);
+    });
+  } catch (error) {
+    console.warn("No se pudo cargar la sesión de Supabase, pero el layout sigue disponible.", error);
+  }
 }
 
 export function hojas(count = 5) {
