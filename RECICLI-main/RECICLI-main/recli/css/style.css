@@ -16,7 +16,7 @@
   --blanco: #FFFFFF;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; min-width: 0; }
 
 html { scroll-behavior: smooth; }
 
@@ -34,6 +34,10 @@ body {
 a { color: inherit; text-decoration: none; }
 
 img { max-width: 100%; display: block; }
+
+h1, h2, h3, p, a, button, span, strong, small, label {
+  overflow-wrap: anywhere;
+}
 
 .container {
   width: min(1120px, calc(100% - 32px));
@@ -166,6 +170,8 @@ img { max-width: 100%; display: block; }
   font-family: var(--font-ui);
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(46, 125, 50, .18);
+  text-align: center;
+  line-height: 1.15;
 }
 
 .btn:hover { transform: translateY(-1px); }
@@ -965,6 +971,103 @@ h2, h3 { font-family: var(--font-ui); }
   background: var(--verde-suave);
 }
 
+.social-product-card {
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.social-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.social-card-head strong {
+  display: block;
+  color: var(--verde-oscuro);
+  font-family: var(--font-ui);
+}
+
+.social-card-head span {
+  color: rgba(30, 30, 30, .62);
+  font-size: .86rem;
+}
+
+.mini-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--verde-principal), var(--verde-claro));
+  color: var(--blanco);
+  font-size: .9rem;
+}
+
+.social-card-media {
+  aspect-ratio: 1 / 1;
+  margin: 0 0 14px;
+  border-radius: 16px;
+}
+
+.social-card-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.social-card-body h3 {
+  margin: 8px 0 0;
+}
+
+.social-price {
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--verde-suave);
+  color: var(--verde-principal);
+  font-family: var(--font-display);
+}
+
+.social-actions {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.publication-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.publication-meta span {
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: rgba(221, 238, 214, .75);
+  color: var(--verde-oscuro);
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.icon-post-action {
+  gap: 6px;
+}
+
+.icon-post-action span {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.icon-post-action small {
+  font-family: var(--font-ui);
+  font-weight: 800;
+}
+
 .verified-post {
   border-color: rgba(139, 195, 74, .55);
 }
@@ -1040,6 +1143,48 @@ h2, h3 { font-family: var(--font-ui); }
   color: #58705f;
 }
 
+.detector-card {
+  border-color: rgba(46, 125, 50, .24);
+  background: linear-gradient(180deg, rgba(221, 238, 214, .46), rgba(255, 255, 255, .94));
+}
+
+.detector-image {
+  width: 100%;
+  border-radius: 14px;
+  margin: 10px 0 12px;
+  border: 1px solid rgba(31, 61, 43, .14);
+  background: var(--verde-suave);
+}
+
+.detector-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.detector-summary span {
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--verde-suave);
+  color: var(--verde-oscuro);
+}
+
+.detector-summary strong {
+  display: block;
+  font-family: var(--font-display);
+  color: var(--verde-principal);
+}
+
+.detected-list {
+  margin: 10px 0;
+  padding-left: 18px;
+}
+
+.detected-list li {
+  margin-bottom: 4px;
+}
+
 .image-preview {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -1057,7 +1202,7 @@ h2, h3 { font-family: var(--font-ui); }
 
 .profile-layout {
   display: grid;
-  grid-template-columns: minmax(340px, .95fr) 1.05fr;
+  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
   gap: 22px;
   align-items: start;
 }
@@ -1069,7 +1214,7 @@ h2, h3 { font-family: var(--font-ui); }
 
 .profile-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   margin-bottom: 18px;
 }
@@ -1089,12 +1234,17 @@ h2, h3 { font-family: var(--font-ui); }
 }
 
 .profile-top h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.55rem);
+  line-height: 1.04;
   margin-bottom: 4px;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .profile-top p {
   margin: 0 0 8px;
   color: #58705f;
+  overflow-wrap: anywhere;
 }
 
 .profile-score strong {
@@ -1108,6 +1258,16 @@ h2, h3 { font-family: var(--font-ui); }
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 18px;
+}
+
+.profile-main .btn,
+.profile-main .action-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.profile-panel-card p {
+  color: rgba(30, 30, 30, .76);
 }
 
 .profile-guest {

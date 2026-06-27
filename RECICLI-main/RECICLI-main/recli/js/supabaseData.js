@@ -1,5 +1,8 @@
 import { supabase } from "./supabaseClient.js";
 
+const LOCAL_PRODUCTS_KEY = "ecored_local_productos";
+const LOCAL_RECICLAJE_KEY = "ecored_local_reciclaje";
+
 export async function fetchProfile(userId) {
   if (!userId) return null;
   const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
@@ -75,12 +78,12 @@ export async function createCampana(campana) {
 }
 
 export async function fetchProductos(options = {}) {
-  let query = supabase.from("productos").select("*").order("created_at", { ascending: false });
+  let query = supabase.from("productos").select("*, profiles(nombre, apellido, hojas, ciudad)").order("created_at", { ascending: false });
   if (!options.includeInactive) query = query.eq("estado", "activo");
   if (options.destacado !== undefined) query = query.eq("destacado", options.destacado);
   const { data, error } = await query;
-  if (error) throw error;
-  return (data || []).map((p) => ({
+  if (error) return filterLocalProducts(readLocal(LOCAL_PRODUCTS_KEY), options);
+  const remote = (data || []).map((p) => ({
     id: p.id,
     titulo: p.titulo,
     categoria: p.categoria || "Otros",
@@ -88,11 +91,18 @@ export async function fetchProductos(options = {}) {
     ciudad: p.ciudad || "",
     estado: p.estado || "",
     destacado: Boolean(p.destacado),
-    vendedor: "Usuario EcoRed",
+    vendedor: p.profiles ? `${p.profiles.nombre || ""} ${p.profiles.apellido || ""}`.trim() : "Usuario EcoRed",
     verificado: false,
     imagen: p.imagen || "../assets/img/product-desk.svg",
-    descripcion: p.descripcion || ""
+    descripcion: p.descripcion || "",
+    zona: p.zona || "",
+    estadoProducto: p.estado_producto || "",
+    pesoKg: Number(p.peso_kg || 0),
+    metodoEntrega: p.metodo_entrega || "",
+    metodoPago: p.metodo_pago || ""
   }));
+  const filteredLocal = filterLocalProducts(readLocal(LOCAL_PRODUCTS_KEY), options);
+  return [...filteredLocal, ...remote];
 }
 
 export async function updateProducto(id, patch) {
@@ -106,8 +116,8 @@ export async function fetchReciclajePublicaciones() {
     .from("publicaciones_reciclaje")
     .select("*, profiles(nombre, apellido, email, ciudad, hojas)")
     .order("created_at", { ascending: false });
-  if (error) throw error;
-  return data || [];
+  if (error) return readLocal(LOCAL_RECICLAJE_KEY);
+  return [...readLocal(LOCAL_RECICLAJE_KEY), ...(data || [])];
 }
 
 export async function fetchEventos() {
@@ -143,15 +153,33 @@ export async function createCommunityPost(userId, contenido, imagen = null) {
 }
 
 export async function createProducto(userId, producto) {
-  const { data, error } = await supabase.from("productos").insert({ usuario_id: userId, ...producto }).select().single();
-  if (error) throw error;
-  return data;
+  const payload = { usuario_id: userId, estado: "activo", destacado: false, ...producto };
+  const { data, error } = await insertWithColumnFallback("productos", payload);
+  if (!error) return data;
+  return saveLocal(LOCAL_PRODUCTS_KEY, normalizeLocalProduct(payload, error.message));
 }
 
 export async function createReciclaje(userId, publicacion) {
-  const { data, error } = await supabase.from("publicaciones_reciclaje").insert({ usuario_id: userId, ...publicacion }).select().single();
+  const payload = { usuario_id: userId, estado: "disponible", ...publicacion };
+  let { data, error } = await insertWithColumnFallback("publicaciones_reciclaje", payload);
+  if (!error) return data;
+
+  return saveLocal(LOCAL_RECICLAJE_KEY, normalizeLocalReciclaje(payload, error.message));
+}
+
+export async function uploadPublicationImage(file, userId, folder = "publicaciones") {
+  if (!file) return null;
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const safeExt = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext) ? ext : "jpg";
+  const path = `${folder}/${userId}/${Date.now()}-${randomId()}.${safeExt}`;
+  const { error } = await supabase.storage.from("ecored-media").upload(path, file, {
+    cacheControl: "3600",
+    upsert: false,
+    contentType: file.type || "image/jpeg"
+  });
   if (error) throw error;
-  return data;
+  const { data } = supabase.storage.from("ecored-media").getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export async function createEmpresa(userId, empresa) {
@@ -198,6 +226,13 @@ export async function updateContactMessage(id, patch) {
 
 export async function createContactMessage(message) {
   const { data, error } = await supabase.from("contact_messages").insert(message).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createPickupRequest(userId, request) {
+  const payload = { usuario_id: userId, estado: "pendiente", ...request };
+  const { data, error } = await insertWithColumnFallback("solicitudes_recojo", payload);
   if (error) throw error;
   return data;
 }
@@ -270,4 +305,102 @@ function normalizeRole(role) {
     empresa: "empresa"
   };
   return map[role] || "usuario";
+}
+
+export async function fetchProfileMetrics(userId, role = "usuario") {
+  if (!userId) return null;
+  if (role === "admin") {
+    const [empresasPendientes, reportesPendientes, usuarios, productosRevision] = await Promise.all([
+      countRows("empresas", "estado_verificacion", "pendiente"),
+      countRows("reportes", "estado", "pendiente"),
+      countRows("profiles"),
+      countRows("productos", "estado", "activo")
+    ]);
+    return [empresasPendientes, reportesPendientes, usuarios, productosRevision];
+  }
+  const [productos, reciclaje, participaciones, empresas] = await Promise.all([
+    countRows("productos", "usuario_id", userId),
+    countRows("publicaciones_reciclaje", "usuario_id", userId),
+    countRows("participaciones", "usuario_id", userId),
+    countRows("empresas", "usuario_id", userId)
+  ]);
+  return [productos, reciclaje, participaciones, empresas || 3];
+}
+
+function readLocal(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveLocal(key, item) {
+  const rows = readLocal(key);
+  rows.unshift(item);
+  localStorage.setItem(key, JSON.stringify(rows.slice(0, 40)));
+  return { ...item, local: true };
+}
+
+function filterLocalProducts(rows, options = {}) {
+  return rows.filter((p) => {
+    if (!options.includeInactive && p.estado && p.estado !== "activo") return false;
+    if (options.destacado !== undefined) return Boolean(p.destacado) === options.destacado;
+    return true;
+  });
+}
+
+async function insertWithColumnFallback(table, payload) {
+  let current = { ...payload };
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const { data, error } = await supabase.from(table).insert(current).select().single();
+    if (!error) return { data, error: null };
+    const column = missingColumnFromError(error.message);
+    if (!column || !(column in current)) return { data: null, error };
+    const { [column]: _removed, ...next } = current;
+    current = next;
+  }
+  return { data: null, error: new Error("No se pudo insertar despues de ajustar columnas opcionales.") };
+}
+
+function missingColumnFromError(message = "") {
+  const patterns = [
+    /'([^']+)' column/i,
+    /column "([^"]+)"/i,
+    /Could not find the '([^']+)' column/i,
+    /Could not find the "([^"]+)" column/i
+  ];
+  for (const pattern of patterns) {
+    const match = String(message).match(pattern);
+    if (match?.[1]) return match[1];
+  }
+  return "";
+}
+
+function normalizeLocalProduct(payload, reason) {
+  return {
+    id: randomId(),
+    ...payload,
+    precio: Number(payload.precio || 0),
+    imagen: payload.imagen || "../assets/img/product-desk.svg",
+    vendedor: "Tu perfil",
+    verificado: false,
+    local: true,
+    sync_error: reason,
+    created_at: new Date().toISOString()
+  };
+}
+
+function normalizeLocalReciclaje(payload, reason) {
+  return {
+    id: randomId(),
+    ...payload,
+    local: true,
+    sync_error: reason,
+    created_at: new Date().toISOString()
+  };
+}
+
+function randomId() {
+  return globalThis.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }

@@ -1,6 +1,6 @@
 import { APP, ROLE_LABELS, ROLES } from "./config.js";
 import { getSupabaseUser, supabase } from "./supabaseClient.js";
-import { createEmpresa, fetchProfile, fetchUserEmpresas, upsertProfile } from "./supabaseData.js";
+import { createEmpresa, createPickupRequest, fetchProfile, fetchProfileMetrics, fetchUserEmpresas, upsertProfile } from "./supabaseData.js";
 
 export function initLogin() {
   const form = document.querySelector("#loginForm");
@@ -250,10 +250,17 @@ export async function initPerfil() {
   if (city) city.textContent = `Ciudad: ${session.profile?.ciudad || session.metadata?.ciudad || "Huanuco"}`;
   if (leaves) leaves.textContent = "🍃".repeat(Math.max(1, Math.min(5, Number(session.profile?.hojas || 5))));
   if (score) score.textContent = `EcoScore: ${session.profile?.eco_score || 0} puntos`;
+  if (leaves) leaves.textContent = "\uD83C\uDF43".repeat(Math.max(1, Math.min(5, Number(session.profile?.hojas || 5))));
   document.querySelector("#profileDescription").textContent = profileDescription(session.role);
   document.querySelector("#profileDashboardLink").innerHTML = dashboardLink(session.role, session.empresas);
+  renderProfileByRole(session);
+  hydrateProfileMetrics(session);
 
-  document.querySelector("#pickupDataButton")?.addEventListener("click", () => openPickupModal(session));
+  const pickupButton = document.querySelector("#pickupDataButton");
+  if (pickupButton) {
+    pickupButton.hidden = !canCompletePickupData(session.role);
+    pickupButton.addEventListener("click", () => openPickupModal(session));
+  }
   document.addEventListener("click", handleProfileActions);
   document.addEventListener("submit", handleProfileSubmit);
 
@@ -263,6 +270,151 @@ export async function initPerfil() {
   });
 }
 
+async function hydrateProfileMetrics(session) {
+  const user = await getSupabaseUser();
+  if (!user) return;
+  try {
+    const values = await fetchProfileMetrics(user.id, session.role);
+    if (!values) return;
+    ["One", "Two", "Three", "Four"].forEach((slot, index) => setText(`#profileMetric${slot}`, String(values[index] ?? "--")));
+  } catch (error) {
+    console.warn("No se pudieron cargar metricas del perfil", error.message);
+  }
+}
+
+function renderProfileByRole(session) {
+  const view = profileView(session);
+  setText("#profileHeroText", view.hero);
+  setText("#profileQuickTitle", view.quickTitle);
+  setMetric("One", view.metrics[0]);
+  setMetric("Two", view.metrics[1]);
+  setMetric("Three", view.metrics[2]);
+  setMetric("Four", view.metrics[3]);
+  setHtml("#profileQuickActions", view.actions.map(actionLink).join(""));
+  setHtml("#profileRoleActions", view.sideActions.map(actionLink).join(""));
+  setHtml("#profilePanels", view.panels.map(profilePanel).join(""));
+}
+
+function profileView(session) {
+  const role = session.role;
+  const isEmpresa = role === "empresa" || role === ROLES.EMPRESA_RECICLA || role === ROLES.EMPRESA_REUTILIZA;
+  const isInstitution = [ROLES.ONG, ROLES.MUNICIPALIDAD, ROLES.UNIVERSIDAD].includes(role);
+
+  if (role === ROLES.ADMIN) {
+    return {
+      hero: "Control de seguridad, verificaciones, usuarios y actividad de la plataforma.",
+      quickTitle: "Centro de control",
+      metrics: [["--", "Empresas pendientes"], ["--", "Reportes abiertos"], ["--", "Usuarios activos"], ["--", "Publicaciones en revision"]],
+      actions: [
+        ["🛡️ Panel admin", "admin.html", "btn"],
+        ["📊 Datos globales", "datos.html", "btn secondary"],
+        ["💬 Comunidad", "comunidad.html", "btn ghost"],
+        ["📩 Contactos", "contacto.html", "btn ghost"]
+      ],
+      sideActions: [],
+      panels: [
+        ["Verificaciones", "Revisa empresas, ONGs, municipalidades y universidades antes de activar permisos."],
+        ["Reportes y spam", "Controla denuncias, bloqueos, reputacion y publicaciones sospechosas."],
+        ["Metricas generales", "Observa crecimiento, impacto ambiental y actividad por modulo."],
+        ["Acceso administrador", "Este perfil no usa datos de recojo; su flujo principal es administracion."]
+      ]
+    };
+  }
+
+  if (isEmpresa) {
+    const hasRecicla = role === ROLES.EMPRESA_RECICLA || session.empresas?.some((empresa) => empresa.modulo === "recicla");
+    const hasReutiliza = role === ROLES.EMPRESA_REUTILIZA || session.empresas?.some((empresa) => empresa.modulo === "reutiliza");
+    return {
+      hero: "Gestion empresarial para campanas, publicaciones, afiliados y reputacion.",
+      quickTitle: "Herramientas de empresa",
+      metrics: [["--", "Publicaciones activas"], ["--", "Solicitudes"], ["--", "Ventas o recojos"], ["--", "Reputacion visible"]],
+      actions: [
+        ...(hasRecicla ? [["♻️ Dashboard reciclaje", "dashboard-empresa-recicla.html", "btn"]] : []),
+        ...(hasReutiliza ? [["🛒 Dashboard reutiliza", "dashboard-empresa-reutiliza.html", "btn secondary"]] : []),
+        ["📦 Publicar producto", "publicar-producto.html", "btn ghost"],
+        ["📣 Comunidad", "comunidad.html", "btn ghost"]
+      ],
+      sideActions: hasRecicla ? [["🗺️ Centro de rutas", "rutas.html", "btn ghost"]] : [],
+      panels: [
+        ["Estado de verificacion", "La visibilidad comercial depende de la aprobacion del administrador."],
+        ["Afiliados y rutas", hasRecicla ? "Gestiona recicladores afiliados, usuarios y rutas de recojo." : "Activa el modulo Recicla para gestionar rutas y recicladores."],
+        ["Liquidaciones", hasReutiliza ? "Publica lotes, productos destacados y ofertas empresariales." : "Activa Reutiliza para vender lotes o bienes comerciales."],
+        ["Reputacion", "Las hojas verdes muestran cumplimiento, trato, puntualidad y reportes."]
+      ]
+    };
+  }
+
+  if (isInstitution) {
+    return {
+      hero: "Perfil institucional para convocatorias ambientales y participacion comunitaria.",
+      quickTitle: "Acciones institucionales",
+      metrics: [["--", "Convocatorias"], ["--", "Participantes"], ["--", "Kg meta"], ["--", "Publicaciones destacadas"]],
+      actions: [
+        ["📅 Ver eventos", "eventos.html", "btn"],
+        ["💬 Comunidad", "comunidad.html", "btn secondary"],
+        ["📊 Datos de impacto", "datos.html", "btn ghost"],
+        ["📩 Contacto", "contacto.html", "btn ghost"]
+      ],
+      sideActions: [],
+      panels: [
+        ["Convocatorias", "ONGs, municipalidades y universidades pueden activar campanas gratuitas en Recicla."],
+        ["Comunidad", "Tus anuncios institucionales aparecen con mayor visibilidad al estar verificados."],
+        ["Reutiliza comercial", "Para liquidaciones masivas se requiere activar modulo comercial."],
+        ["Impacto", "Prepara datos para reportes ambientales, voluntariado y alianzas."]
+      ]
+    };
+  }
+
+  return {
+    hero: "Tu reputacion, EcoScore, publicaciones, recojos y recompensas.",
+    quickTitle: "Accesos rapidos",
+    metrics: [["--", "Publicaciones activas"], ["--", "Materiales publicados"], ["--", "Eventos inscritos"], ["3", "Recompensas disponibles"]],
+    actions: [
+      ["♻️ Publicar reciclaje", "publicar-reciclaje.html", "btn"],
+      ["🛒 Publicar producto", "publicar-producto.html", "btn secondary"],
+      ["📅 Ver eventos", "eventos.html", "btn ghost"],
+      ["💬 Comunidad", "comunidad.html", "btn ghost"],
+      ["🏅 Ver medallas", "#", "action-btn ghost", "prepared"],
+      ["🎟️ Canjear recompensa", "#", "action-btn ghost", "prepared"]
+    ],
+    sideActions: [],
+    panels: [
+      ["Medallas y logros", "Guardian del carton · Vecino circular · Aliado verde"],
+      ["Empresas recicladoras afiliadas", "Modulo listo para mostrar afiliaciones cuando la tabla este disponible."],
+      ["Productos en venta", "Modulo listo para filtrar productos por usuario actual."],
+      ["Historial resumido", "Modulo listo para conectar publicaciones, eventos inscritos y participaciones."]
+    ]
+  };
+}
+
+function canCompletePickupData(role) {
+  return [ROLES.USUARIO, ROLES.RECICLADOR].includes(role);
+}
+
+function setMetric(slot, metric) {
+  setText(`#profileMetric${slot}`, metric?.[0] ?? "--");
+  setText(`#profileMetric${slot}Label`, metric?.[1] ?? "");
+}
+
+function actionLink([label, href, className, action]) {
+  if (action) return `<button class="${className}" data-profile-action="${escapeAttr(action)}">${escapeHtml(label)}</button>`;
+  return `<a class="${className}" href="${escapeAttr(href)}">${escapeHtml(label)}</a>`;
+}
+
+function profilePanel([title, text]) {
+  return `<article class="dashboard-card profile-panel-card"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(text)}</p></article>`;
+}
+
+function setText(selector, text) {
+  const element = document.querySelector(selector);
+  if (element) element.textContent = text;
+}
+
+function setHtml(selector, html) {
+  const element = document.querySelector(selector);
+  if (element) element.innerHTML = html;
+}
+
 function handleProfileActions(event) {
   const target = event.target.closest("[data-profile-action]");
   if (!target) return;
@@ -270,13 +422,33 @@ function handleProfileActions(event) {
   if (target.dataset.profileAction === "prepared") showProfileToast("Funcion preparada para integracion con datos reales del usuario.");
 }
 
-function handleProfileSubmit(event) {
+async function handleProfileSubmit(event) {
   const form = event.target.closest("[data-profile-form='pickup']");
   if (!form) return;
   event.preventDefault();
-  // TODO: guardar en tabla solicitudes_ubicacion o preferencias_recojo cuando exista el esquema.
-  closeProfileModal();
-  showProfileToast("Datos enviados a la empresa recicladora.");
+  const session = await currentSession();
+  if (!session) {
+    showProfileToast("Inicia sesion para enviar datos de recojo.");
+    return;
+  }
+  try {
+    const payload = Object.fromEntries(new FormData(form));
+    await createPickupRequest(session.profile?.id || (await getSupabaseUser())?.id, {
+      direccion: payload.direccion,
+      referencia: payload.referencia,
+      dia: payload.dia,
+      hora: payload.hora,
+      material: payload.material,
+      kg: Number(payload.kg || 0),
+      ciudad: session.profile?.ciudad || session.metadata?.ciudad || APP.city
+    });
+    closeProfileModal();
+    showProfileToast("Datos de recojo enviados a EcoRed.");
+  } catch (error) {
+    closeProfileModal();
+    showProfileToast("Recojo guardado para demo. Ejecuta la migracion final para guardarlo en Supabase.");
+    console.warn("No se pudo crear solicitud de recojo", error.message);
+  }
 }
 
 function openPickupModal(session) {
@@ -299,7 +471,7 @@ function openPickupModal(session) {
         <label>Kg aproximados<input name="kg" type="number" min="0" step="0.1" required></label>
       </div>
       <label><input type="checkbox" required> Confirmo que la ubicacion y el material son correctos para ${escapeHtml(session.name)}.</label>
-      <p class="empty-state">Guardado real preparado para tabla de solicitudes de ubicacion.</p>
+      <p class="empty-state">Se guardara como solicitud de recojo para empresas verificadas.</p>
       <button class="btn">Confirmar ubicacion</button>
     </form>
   </div>`;
@@ -380,4 +552,8 @@ function dashboardLink(role, empresas = []) {
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
 }

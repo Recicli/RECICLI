@@ -174,10 +174,10 @@ function renderCollectors() {
 function renderRoutes() {
   setHtml("routesPanel", `<article class="dashboard-card route-card">
     <span class="status-badge pending">Preparado</span>
-    <h3>Vista de rutas</h3>
-    <p>Vista de rutas preparada para integracion con mapa.</p>
-    <p>Modulo listo para conectar ciudad, zona, fecha, reciclador, usuarios incluidos y kg estimados.</p>
-    <button class="action-btn" data-dashboard-action="open-route-modal">Ver rutas</button>
+    <h3>Centro de rutas</h3>
+    <p>Modulo independiente para mapa, paradas, recojos y recálculo de ruta.</p>
+    <p>Listo para conectar ciudad, zona, fecha, reciclador, usuarios incluidos y kg estimados.</p>
+    <a class="action-btn" href="rutas.html">Abrir centro de rutas</a>
   </article>`);
 }
 
@@ -333,7 +333,7 @@ async function handleDashboardAction(event) {
   try {
     if (action === "open-campaign-modal") openCampaignModal();
     if (action === "open-liquidation-modal") openLiquidationModal();
-    if (action === "open-route-modal") openInfoModal("Vista de rutas", "Vista de rutas preparada para integracion con mapa.");
+    if (action === "open-route-modal") window.location.href = "rutas.html";
     if (action === "open-location-modal") openLocationModal(target);
     if (action === "view-location") openInfoModal("Ubicacion de recojo", "Datos de direccion listos para futura integracion con mapa.");
     if (action === "generated-link") generatePickupLink(target);

@@ -150,6 +150,9 @@
   .community-side { grid-template-columns: 1fr; }
   .post-meta { align-items: start; flex-direction: column; }
   .post-actions { grid-template-columns: 1fr; }
+  .icon-post-action {
+    justify-content: center;
+  }
   .compact-game { grid-template-columns: 1fr 1fr; }
   .hero-visual { grid-template-columns: 1fr; }
   .section { padding: 52px 0; }
@@ -159,6 +162,11 @@
   .mini-game-options { grid-template-columns: 1fr 1fr; }
   .btn { width: 100%; }
   .card { padding: 18px; }
+  .social-product-card { padding: 12px; }
+  .social-card-body { flex-direction: column; }
+  .social-actions { grid-template-columns: 1fr; }
+  .detector-summary { grid-template-columns: 1fr; }
+  .estimate-side { gap: 12px; }
 }
 
 @keyframes mobile-menu-in {

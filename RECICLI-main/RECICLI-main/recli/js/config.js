@@ -15,7 +15,13 @@ export const APP = {
   city: "Huanuco",
   storageRoleKey: "ecored_role",
   storageUserKey: "ecored_user",
-  freeReusePosts: 10
+  freeReusePosts: 10,
+  detectorApiUrl: location.hostname === "localhost" || location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000/analizar"
+    : "https://ecored-detector.onrender.com/analizar",
+  routesAppUrl: location.hostname === "localhost" || location.hostname === "127.0.0.1"
+    ? "http://localhost:5173/"
+    : "https://ecored-rutas.onrender.com/"
 };
 
 export const NAV_LINKS = [

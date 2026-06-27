@@ -14,7 +14,7 @@
     <section class="page-hero compact-hero">
       <div class="container">
         <h1>Perfil EcoRed</h1>
-        <p class="lead">Tu reputacion, EcoScore, publicaciones, recojos y recompensas.</p>
+        <p id="profileHeroText" class="lead">Tu espacio personalizado en EcoRed.</p>
       </div>
     </section>
 
@@ -26,7 +26,7 @@
           <a class="btn eco-login-cta" href="login.html">Inicia en Eco</a>
         </div>
 
-        <div id="profileContent" class="dashboard-layout">
+        <div id="profileContent" class="profile-layout">
           <aside class="dashboard-card promoted profile-main">
             <div class="profile-top">
               <div id="profileInitials" class="profile-avatar">E</div>
@@ -45,32 +45,27 @@
               <span class="tag">Cupon destacado disponible</span>
             </div>
             <div id="profileDashboardLink" class="profile-actions"></div>
+            <div id="profileRoleActions" class="profile-actions"></div>
             <button id="pickupDataButton" class="btn" type="button">Completar datos de recojo</button>
             <button id="logoutButton" class="btn ghost" type="button">Cerrar sesion</button>
           </aside>
 
           <div class="dashboard-main">
             <section class="stats-grid">
-              <article class="metric-card"><strong id="profileActivePosts">--</strong><span>Publicaciones activas</span></article>
-              <article class="metric-card"><strong id="profileRecyclePosts">--</strong><span>Materiales publicados</span></article>
-              <article class="metric-card"><strong id="profileEvents">--</strong><span>Eventos inscritos</span></article>
-              <article class="metric-card"><strong id="profileRewards">3</strong><span>Recompensas disponibles</span></article>
+              <article class="metric-card"><strong id="profileMetricOne">--</strong><span id="profileMetricOneLabel">Publicaciones activas</span></article>
+              <article class="metric-card"><strong id="profileMetricTwo">--</strong><span id="profileMetricTwoLabel">Materiales publicados</span></article>
+              <article class="metric-card"><strong id="profileMetricThree">--</strong><span id="profileMetricThreeLabel">Eventos inscritos</span></article>
+              <article class="metric-card"><strong id="profileMetricFour">3</strong><span id="profileMetricFourLabel">Recompensas disponibles</span></article>
             </section>
 
             <section class="dashboard-card">
-              <h2>Accesos rapidos</h2>
-              <div class="action-row">
-                <a class="btn" href="publicar-reciclaje.html">Publicar reciclaje</a>
-                <a class="btn secondary" href="publicar-producto.html">Publicar producto</a>
-                <a class="btn ghost" href="eventos.html">Ver eventos</a>
-                <a class="btn ghost" href="comunidad.html">Ir a comunidad</a>
-                <button class="action-btn ghost" data-profile-action="prepared">Ver mis medallas</button>
-                <button class="action-btn ghost" data-profile-action="prepared">Canjear recompensa</button>
+              <h2 id="profileQuickTitle">Accesos rapidos</h2>
+              <div id="profileQuickActions" class="action-row">
               </div>
             </section>
 
-            <section class="panel-grid">
-              <article class="dashboard-card">
+            <section id="profilePanels" class="panel-grid">
+              <article class="dashboard-card profile-panel-card">
                 <h3>Medallas y logros</h3>
                 <p class="eco-score">Guardian del carton · Vecino circular · Aliado verde</p>
               </article>

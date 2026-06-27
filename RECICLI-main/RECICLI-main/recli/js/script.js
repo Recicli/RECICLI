@@ -59,9 +59,9 @@ function renderFooter() {
       </div>
       <div>
         <h3>Modulos</h3>
-        <p><a href="${basePath()}pages/recicla.html">Recicla</a></p>
-        <p><a href="${basePath()}pages/reutiliza.html">Reutiliza</a></p>
+        <p><a href="${basePath()}pages/explorar.html">Explorar Recicla y Reutiliza</a></p>
         <p><a href="${basePath()}pages/comunidad.html">Comunidad</a></p>
+        <p><a href="${basePath()}pages/eventos.html">Eventos</a></p>
       </div>
       <div>
         <h3>Hackaton</h3>

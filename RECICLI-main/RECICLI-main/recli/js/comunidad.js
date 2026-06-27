@@ -93,12 +93,12 @@ function renderPosts(list) {
       <p>${p.texto}</p>
       <div class="post-meta">
         <span>${hojas(p.hojas)} EcoScore visible</span>
-        <span>${p.likes} me gusta</span>
+        <span>👍 ${p.likes}</span>
       </div>
       <div class="post-actions">
-        <button class="post-action" data-like="${index}">Me gusta</button>
-        <button class="post-action">Comentar</button>
-        <button class="post-action">Compartir</button>
+        <button class="post-action icon-post-action" data-like="${index}" aria-label="Reaccionar"><span>👍</span></button>
+        <button class="post-action icon-post-action" aria-label="Comentar"><span>💬</span><small>Comentar</small></button>
+        <button class="post-action icon-post-action" aria-label="Compartir"><span>↗</span><small>Compartir</small></button>
       </div>
     </article>`).join("");
 }
