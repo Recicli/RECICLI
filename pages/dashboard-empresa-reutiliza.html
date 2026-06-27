@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Empresa Reutiliza</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero compact-hero">
+      <div class="container">
+        <h1>Dashboard Empresa Reutiliza</h1>
+        <p class="lead">Gestion comercial de publicaciones, liquidaciones, mensajes, publicidad y reputacion.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container dashboard-layout" data-dashboard-type="reutiliza">
+        <aside class="dashboard-sidebar">
+          <h3>Empresa Reutiliza</h3>
+          <button class="active" data-section-target="resumen">Resumen</button>
+          <button data-section-target="publicaciones">Publicaciones</button>
+          <button data-section-target="liquidaciones">Liquidaciones</button>
+          <button data-section-target="ventas">Ventas</button>
+          <button data-section-target="mensajes">Mensajes</button>
+          <button data-section-target="publicidad">Publicidad</button>
+          <button data-section-target="estadisticas">Estadisticas</button>
+          <button data-section-target="reputacion">Reputacion</button>
+        </aside>
+
+        <div class="dashboard-main">
+          <header class="dashboard-header">
+            <div>
+              <span class="status-badge success">Supabase conectado</span>
+              <h2 id="dashboardTitle">Resumen</h2>
+              <p>Panel listo para empresas, municipalidades, universidades o instituciones verificadas.</p>
+            </div>
+            <button class="btn ghost" data-dashboard-refresh>Actualizar</button>
+          </header>
+
+          <section class="dashboard-section active" data-section="resumen"><div id="reuseStats" class="stats-grid"></div></section>
+          <section class="dashboard-section" data-section="publicaciones"><div class="dashboard-card"><div class="dashboard-header"><div><h2>Publicaciones</h2><p>Productos activos publicados en Reutiliza.</p></div><a class="btn" href="publicar-producto.html">Nueva publicacion</a></div><div id="productsTable" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="liquidaciones"><div class="dashboard-card"><div class="dashboard-header"><div><h2>Liquidaciones empresariales</h2><p>Lotes comerciales y ventas masivas.</p></div><button class="btn" data-dashboard-action="open-liquidation-modal">Crear liquidacion</button></div><div id="liquidationList" class="panel-grid"></div></div></section>
+          <section class="dashboard-section" data-section="ventas"><div class="dashboard-card"><h2>Ventas</h2><div id="salesTable" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="mensajes"><div class="dashboard-card"><h2>Interesados y mensajes</h2><div id="reuseMessages" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="publicidad"><div class="dashboard-card"><h2>Publicidad destacada</h2><div id="adsPanel" class="panel-grid"></div></div></section>
+          <section class="dashboard-section" data-section="estadisticas"><div class="dashboard-card"><h2>Estadisticas</h2><div id="reuseAnalytics" class="grid"></div></div></section>
+          <section class="dashboard-section" data-section="reputacion"><div class="dashboard-card"><h2>Reputacion</h2><div id="reuseReputation" class="grid"></div></div></section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="dashboardModal" class="modal" aria-hidden="true"></div>
+  <div id="dashboardToast" class="toast" role="status"></div>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initDashboard } from "../js/dashboard.js";
+    layout("Dashboard Reutiliza");
+    await initDashboard();
+  </script>
+</body>
+</html>

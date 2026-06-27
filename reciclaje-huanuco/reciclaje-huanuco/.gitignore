@@ -1,0 +1,17 @@
+# Dependencias
+node_modules/
+
+# Build de Vite
+dist/
+
+# Entorno
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / SO
+.vscode/
+.DS_Store
+Thumbs.db

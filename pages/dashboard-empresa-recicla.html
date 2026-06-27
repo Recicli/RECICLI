@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Empresa Recicla</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero compact-hero">
+      <div class="container">
+        <h1>Dashboard Empresa Recicla</h1>
+        <p class="lead">Operacion de campanas, afiliados, rutas, materiales, pagos y recomendaciones EcoRed.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container dashboard-layout" data-dashboard-type="recicla">
+        <aside class="dashboard-sidebar">
+          <h3>Empresa Recicla</h3>
+          <button class="active" data-section-target="resumen">Resumen</button>
+          <button data-section-target="reciclaje">Dashboard Reciclaje</button>
+          <button data-section-target="campanas">Campanas</button>
+          <button data-section-target="usuarios">Usuarios afiliados</button>
+          <button data-section-target="recicladores">Recicladores afiliados</button>
+          <button data-section-target="rutas">Rutas</button>
+          <button data-section-target="materiales">Materiales</button>
+          <button data-section-target="pagos">Pagos</button>
+          <button data-section-target="ubicaciones">Solicitudes de ubicacion</button>
+          <button data-section-target="ia">IA EcoRed</button>
+        </aside>
+
+        <div class="dashboard-main">
+          <header class="dashboard-header">
+            <div>
+              <span class="status-badge success">Supabase conectado</span>
+              <h2 id="dashboardTitle">Resumen</h2>
+              <p>Panel preparado para operar reciclaje local con datos reales y modulos listos para integracion.</p>
+            </div>
+            <button class="btn ghost" data-dashboard-refresh>Actualizar</button>
+          </header>
+
+          <section class="dashboard-section active" data-section="resumen"><div id="reciclaStats" class="stats-grid"></div></section>
+          <section class="dashboard-section" data-section="reciclaje"><div id="recycleCore" class="grid"></div></section>
+          <section class="dashboard-section" data-section="campanas">
+            <div class="dashboard-card">
+              <div class="dashboard-header"><div><h2>Campanas</h2><p>Campanas creadas por empresas recicladoras.</p></div><button class="btn" data-dashboard-action="open-campaign-modal">Crear campana</button></div>
+              <div id="campaignList" class="panel-grid"></div>
+            </div>
+          </section>
+          <section class="dashboard-section" data-section="usuarios"><div class="dashboard-card"><h2>Usuarios afiliados</h2><div id="affiliatedUsers" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="recicladores"><div class="dashboard-card"><h2>Recicladores afiliados</h2><div id="collectorsTable" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="rutas"><div class="dashboard-card"><div class="dashboard-header"><div><h2>Rutas programadas</h2><p>Centro de rutas conectado como modulo independiente.</p></div><a class="btn" href="rutas.html">Abrir centro de rutas</a></div><div id="routesPanel" class="panel-grid"></div></div></section>
+          <section class="dashboard-section" data-section="materiales"><div class="dashboard-card"><h2>Materiales</h2><div id="materialsPanel" class="grid"></div></div></section>
+          <section class="dashboard-section" data-section="pagos"><div class="dashboard-card"><h2>Pagos estimados</h2><div id="paymentsTable" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="ubicaciones"><div class="dashboard-card"><h2>Solicitudes de ubicacion</h2><div id="locationRequests" class="table-wrap"></div></div></section>
+          <section class="dashboard-section" data-section="ia"><div class="dashboard-card"><h2>IA EcoRed</h2><div id="ecoAiPanel" class="grid"></div></div></section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="dashboardModal" class="modal" aria-hidden="true"></div>
+  <div id="dashboardToast" class="toast" role="status"></div>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initDashboard } from "../js/dashboard.js";
+    layout("Dashboard Recicla");
+    await initDashboard();
+  </script>
+</body>
+</html>

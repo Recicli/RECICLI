@@ -1,0 +1,18 @@
+﻿# Frontend publicado desde raiz
+backups/
+RECICLI-main/
+recli/
+reciclaje-huanuco/
+Deteccion de objetos/
+
+# Python / IA
+**/env/
+**/__pycache__/
+*.pyc
+*.pyd
+*.dll
+*.pt
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db

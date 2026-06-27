@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centro de rutas</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero compact-hero">
+      <div class="container">
+        <span class="eyebrow">Modulo logistico</span>
+        <h1>Centro de rutas EcoRed</h1>
+        <p class="lead">Gestiona rutas de recojo con mapa, paradas y recálculo por cancelaciones.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid two">
+        <article class="dashboard-card">
+          <span class="status-badge success">Mapa externo</span>
+          <h2>Rutas de recoleccion</h2>
+          <p>Este modulo vive separado para mantener el dashboard ligero. Abre la app de rutas cuando el equipo de operaciones la tenga corriendo.</p>
+          <div class="action-row">
+            <a id="openRoutesApp" class="btn" target="_blank" rel="noopener">Abrir mapa de rutas</a>
+            <a class="btn ghost" href="dashboard-empresa-recicla.html">Volver al dashboard</a>
+          </div>
+        </article>
+
+        <article class="dashboard-card route-card">
+          <h3>Estado de integracion</h3>
+          <p>La app de rutas usa React, Express, MySQL, Leaflet y OSRM. Para la demo se abre como modulo aparte; luego puede migrarse a Supabase o embeberse en esta pagina.</p>
+          <div class="route-meta">
+            <span><strong>OSRM</strong><br>Rutas por calles</span>
+            <span><strong>4 s</strong><br>Sondeo operativo</span>
+            <span><strong>Huanuco</strong><br>Zona base</span>
+            <span><strong>Listo</strong><br>Para enlazar</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { APP } from "../js/config.js";
+    layout("Rutas");
+    document.querySelector("#openRoutesApp").href = localStorage.getItem("ecored_routes_url") || APP.routesAppUrl;
+  </script>
+</body>
+</html>

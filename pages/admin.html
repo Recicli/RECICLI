@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero compact-hero">
+      <div class="container">
+        <h1>Panel admin</h1>
+        <p class="lead">Control de verificaciones, mensajes, reportes, usuarios y seguridad de EcoRed.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container dashboard-layout" data-dashboard="admin">
+        <aside class="dashboard-sidebar">
+          <h3>Admin EcoRed</h3>
+          <button class="active" data-section-target="resumen">Resumen</button>
+          <button data-section-target="verificaciones">Verificaciones</button>
+          <button data-section-target="empresas">Empresas</button>
+          <button data-section-target="instituciones">Instituciones</button>
+          <button data-section-target="mensajes">Mensajes</button>
+          <button data-section-target="reportes">Reportes</button>
+          <button data-section-target="spam">Spam</button>
+          <button data-section-target="publicaciones">Publicaciones</button>
+          <button data-section-target="usuarios">Usuarios</button>
+          <button data-section-target="metricas">Metricas</button>
+        </aside>
+
+        <div class="dashboard-main">
+          <header class="dashboard-header">
+            <div>
+              <span class="status-badge success">Base vinculada</span>
+              <h2 id="adminSectionTitle">Resumen</h2>
+              <p>Las consultas usan Supabase. Las acciones sin tabla clara quedan preparadas para integracion.</p>
+            </div>
+            <button class="btn ghost" data-refresh-admin>Actualizar</button>
+          </header>
+
+          <section class="dashboard-section active" data-section="resumen">
+            <div id="adminStats" class="stats-grid"></div>
+          </section>
+
+          <section class="dashboard-section" data-section="verificaciones">
+            <div class="dashboard-card">
+              <div class="dashboard-header">
+                <div><h2>Solicitudes de verificacion</h2><p>Empresas e instituciones pendientes o en revision.</p></div>
+                <select id="verificationFilter"><option value="todo">Todas</option><option value="pendiente">Pendientes</option><option value="aprobada">Aprobadas</option><option value="rechazada">Rechazadas</option></select>
+              </div>
+              <div id="verificationList" class="panel-grid"></div>
+            </div>
+          </section>
+
+          <section class="dashboard-section" data-section="empresas">
+            <div class="dashboard-card"><h2>Empresas</h2><div id="companiesTable" class="table-wrap"></div></div>
+          </section>
+
+          <section class="dashboard-section" data-section="instituciones">
+            <div class="dashboard-card"><h2>Instituciones</h2><div id="institutionsTable" class="table-wrap"></div></div>
+          </section>
+
+          <section class="dashboard-section" data-section="mensajes">
+            <div class="dashboard-card">
+              <div class="dashboard-header">
+                <div><h2>Mensajes de contacto</h2><p>Consultas enviadas desde la pagina de contacto.</p></div>
+                <select id="messageFilter"><option value="todo">Todos</option><option value="Usuarios">Usuarios</option><option value="Empresas">Empresas</option><option value="ONGs">ONGs</option><option value="Municipalidades">Municipalidades</option><option value="Soporte">Soporte</option></select>
+              </div>
+              <div id="messagesTable" class="table-wrap"></div>
+            </div>
+          </section>
+
+          <section class="dashboard-section" data-section="reportes">
+            <div class="dashboard-card"><h2>Reportes activos</h2><div id="reportsTable" class="table-wrap"></div></div>
+          </section>
+
+          <section class="dashboard-section" data-section="spam">
+            <div class="dashboard-card"><h2>Usuarios sospechosos</h2><div id="spamTable" class="table-wrap"></div></div>
+          </section>
+
+          <section class="dashboard-section" data-section="publicaciones">
+            <div class="dashboard-card"><h2>Publicaciones sospechosas</h2><div id="suspiciousPosts" class="panel-grid"></div></div>
+          </section>
+
+          <section class="dashboard-section" data-section="usuarios">
+            <div class="dashboard-card">
+              <div class="dashboard-header">
+                <div><h2>Usuarios</h2><p>Perfiles registrados, roles y estado de cuenta.</p></div>
+                <select id="userFilter"><option value="todo">Todos</option><option value="usuario">Usuario normal</option><option value="empresa">Empresa</option><option value="reciclador">Reciclador</option><option value="ong">ONG</option><option value="municipalidad">Municipalidad</option><option value="universidad">Universidad</option><option value="suspendido">Bloqueados</option></select>
+              </div>
+              <div id="usersTable" class="table-wrap"></div>
+            </div>
+          </section>
+
+          <section class="dashboard-section" data-section="metricas">
+            <div class="dashboard-card"><h2>Metricas generales</h2><div id="adminMetrics" class="stats-grid"></div></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="adminModal" class="modal" aria-hidden="true"></div>
+  <div id="adminToast" class="toast" role="status"></div>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initAdmin } from "../js/admin.js";
+    layout("Admin");
+    await initAdmin();
+  </script>
+</body>
+</html>

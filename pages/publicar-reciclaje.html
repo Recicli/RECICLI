@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicar reciclaje</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero"><div class="container"><h1>Publicar material reciclable</h1><p class="lead">Calcula un aproximado y publica tu material.</p></div></section>
+    <section class="section">
+      <div class="container estimate-layout">
+        <form id="reciclajeForm" class="card form">
+          <label>Tipo de material<select name="material" id="materialReciclaje"><option>Papel/carton</option><option>Plastico PET</option><option>Vidrio</option><option>Metal</option><option>Otros</option></select></label>
+          <div class="split"><label>Cantidad aproximada<input name="cantidad" id="cantidadReciclaje" type="number" min="1" placeholder="20"></label><label>Unidad<select name="unidad" id="unidadReciclaje"><option>kg</option><option>bolsas</option><option>unidades</option></select></label></div>
+          <div class="split"><label>Ciudad<input name="ciudad" value="Huanuco"></label><label>Zona<input name="zona" placeholder="Amarilis Norte"></label></div>
+          <label>Disponibilidad de recojo<select name="disponibilidad_recojo"><option>Manana</option><option>Tarde</option><option>Fin de semana</option></select></label>
+          <label>Foto opcional<input id="fotoReciclaje" type="file" accept="image/*"></label>
+          <div id="previewReciclaje" class="image-preview" hidden></div>
+          <label>Observaciones<textarea name="descripcion" placeholder="Material limpio, separado, listo para recojo"></textarea></label>
+          <div class="mobile-estimate-slot"></div>
+          <button class="btn secondary" id="analizarReciclaje" type="button">Analizar</button>
+          <button class="btn" type="submit">Publicar material</button>
+          <p id="reciclajeMessage" class="mini-result"></p>
+        </form>
+        <aside class="estimate-side">
+          <article class="card estimate-card" id="estimateReciclaje"><h3>Estimacion EcoRed</h3><p>Completa material y kilos, luego presiona Analizar.</p></article>
+          <article class="card detector-card" id="detectorReciclaje"><h3>Detector IA</h3><p>Sube una foto y presiona Analizar para detectar material y peso aproximado.</p></article>
+          <article class="card"><h3>Acciones rapidas</h3><p>Tambien puedes unirte a una campana activa o afiliarte a una empresa recicladora.</p><button id="joinCampaignButton" class="btn secondary" type="button">Unirme a campana</button><button id="pickupLocationButton" class="btn ghost location-button" type="button">Ubicacion para recojo</button></article>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { getSupabaseUser } from "../js/supabaseClient.js";
+    import { createReciclaje, uploadPublicationImage, upsertProfile } from "../js/supabaseData.js";
+    import { analyzeObjectImage, detectorUnavailableMessage, renderDetectorResult } from "../js/objectDetector.js";
+
+    layout("Publicar reciclaje");
+    const rates = { "Papel/carton": .35, "Plastico PET": .55, Vidrio: .18, Metal: .8, Otros: .2 };
+    const formEl = document.querySelector("#reciclajeForm");
+    const estimate = document.querySelector("#estimateReciclaje");
+    const preview = document.querySelector("#previewReciclaje");
+    const detector = document.querySelector("#detectorReciclaje");
+    let detectedRecycle = null;
+
+    document.querySelector("#fotoReciclaje").addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      preview.hidden = false;
+      preview.style.backgroundImage = `url('${URL.createObjectURL(file)}')`;
+    });
+
+    document.querySelector("#analizarReciclaje").addEventListener("click", async () => {
+      const file = document.querySelector("#fotoReciclaje").files?.[0];
+      if (file) {
+        detector.innerHTML = `<h3>Detector IA</h3><p>Analizando imagen...</p>`;
+        try {
+          detectedRecycle = await analyzeObjectImage(file);
+          detector.innerHTML = renderDetectorResult(detectedRecycle, "reciclaje");
+          document.querySelector("#materialReciclaje").value = detectedRecycle.recyclingMaterial;
+          if (detectedRecycle.totalKg > 0) {
+            document.querySelector("#cantidadReciclaje").value = Math.max(.1, detectedRecycle.totalKg).toFixed(2);
+            document.querySelector("#unidadReciclaje").value = "kg";
+          }
+        } catch (error) {
+          detectedRecycle = null;
+          detector.innerHTML = detectorUnavailableMessage(error);
+        }
+      }
+
+      const material = document.querySelector("#materialReciclaje").value;
+      const cantidad = Number(document.querySelector("#cantidadReciclaje").value || 0);
+      const unidad = document.querySelector("#unidadReciclaje").value;
+      const kilos = detectedRecycle?.totalKg || (unidad === "kg" ? cantidad : cantidad * (unidad === "bolsas" ? 4 : .2));
+      const min = kilos * (rates[material] || .2);
+      const max = min * 1.25;
+      estimate.innerHTML = `<h3>Estimacion EcoRed</h3><p>Material: <strong>${material}</strong></p><p>Kilos estimados: <strong>${kilos.toFixed(2)} kg</strong></p><p>Valor aproximado: <strong>S/ ${min.toFixed(2)} - S/ ${max.toFixed(2)}</strong></p><small>${detectedRecycle ? "Calculado con apoyo del detector IA." : "Estimacion referencial segun material, peso y mercado local."}</small>`;
+    });
+
+    document.querySelector("#joinCampaignButton").addEventListener("click", () => {
+      document.querySelector("#reciclajeMessage").textContent = "Listo: revisa las campanas activas en Recicla para confirmar tu participacion.";
+      window.setTimeout(() => { window.location.href = "recicla.html"; }, 700);
+    });
+
+    document.querySelector("#pickupLocationButton").addEventListener("click", () => {
+      document.querySelector("#reciclajeMessage").textContent = "Ubicacion preparada. Al publicar, la empresa recicladora podra coordinar recojo contigo.";
+      document.querySelector("[name='descripcion']").value = `${document.querySelector("[name='descripcion']").value} Ubicacion pendiente de confirmacion directa.`;
+    });
+
+    formEl.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = document.querySelector("#reciclajeMessage");
+      const user = await getSupabaseUser();
+      if (!user) { message.textContent = "Inicia sesion para publicar."; return; }
+      try { await upsertProfile(user); } catch (profileError) { console.warn("Perfil pendiente de sincronizar", profileError.message); }
+      const form = new FormData(event.currentTarget);
+      const imageFile = document.querySelector("#fotoReciclaje").files?.[0];
+      const image = imageFile ? await publicationImageUrl(imageFile, user.id, "reciclaje") : null;
+      try {
+        const saved = await createReciclaje(user.id, {
+          material: form.get("material"),
+          cantidad: Number(form.get("cantidad") || 0),
+          unidad: form.get("unidad"),
+          descripcion: form.get("descripcion"),
+          ciudad: form.get("ciudad"),
+          zona: form.get("zona"),
+          disponibilidad_recojo: form.get("disponibilidad_recojo"),
+          detector_json: detectedRecycle?.raw || null,
+          imagen: image
+        });
+        message.textContent = saved.local ? "Material publicado localmente para la demo. Supabase se sincronizara al ajustar permisos/columnas." : "Material publicado en Supabase.";
+        event.currentTarget.reset();
+        preview.hidden = true;
+      } catch (error) {
+        message.textContent = `No se pudo publicar: ${error.message}`;
+      }
+    });
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function publicationImageUrl(file, userId, folder) {
+      try {
+        return await uploadPublicationImage(file, userId, folder);
+      } catch (error) {
+        console.warn("Storage no disponible, usando imagen local", error.message);
+        return fileToDataUrl(file);
+      }
+    }
+  </script>
+</body>
+</html>

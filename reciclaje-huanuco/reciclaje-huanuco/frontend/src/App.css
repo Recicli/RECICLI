@@ -1,0 +1,357 @@
+/* ============================================================
+   CAPA 3: FRONTEND — Estilos
+   Paleta "eco / operaciones de campo":
+     Verde bosque  #15803d  -> ruta y acentos
+     Verde profundo #14532d  -> barra superior
+     Ambar         #d97706  -> botones de atencion / numeros de parada
+     Pizarra       #1e293b  -> texto principal
+     Gris medio    #64748b  -> texto secundario
+     Fondo         #eef2f0  -> lienzo (verde muy tenue)
+     Rojo          #dc2626  -> cancelar
+   ============================================================ */
+
+:root {
+  --verde: #15803d;
+  --verde-oscuro: #14532d;
+  --ambar: #d97706;
+  --pizarra: #1e293b;
+  --gris: #64748b;
+  --fondo: #eef2f0;
+  --linea: #e2e8f0;
+  --rojo: #dc2626;
+  --blanco: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+  color: var(--pizarra);
+  background: var(--fondo);
+}
+
+/* ---------- Estructura general ---------- */
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.contenido {
+  flex: 1;
+  display: flex;
+  min-height: 0; /* clave para que el mapa pueda ocupar el alto */
+}
+
+/* ---------- Barra superior ---------- */
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.4rem;
+  background: var(--verde-oscuro);
+  color: var(--blanco);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.marca-icono {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.marca-texto h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.marca-texto p {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.05s ease, filter 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-iniciar {
+  background: var(--verde);
+  color: var(--blanco);
+}
+
+.btn-finalizar {
+  background: var(--ambar);
+  color: var(--blanco);
+}
+
+/* ---------- Aviso ---------- */
+.aviso {
+  background: #ecfccb;
+  color: #3f6212;
+  border-bottom: 1px solid #d9f99d;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* ---------- Mapa ---------- */
+.mapa-contenedor {
+  flex: 1;
+  min-width: 0;
+}
+
+.mapa {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Panel lateral ---------- */
+.panel {
+  width: 360px;
+  flex-shrink: 0;
+  background: var(--blanco);
+  border-left: 1px solid var(--linea);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.2rem 0.7rem;
+}
+
+.panel-cabecera h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.contador {
+  background: var(--verde);
+  color: var(--blanco);
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+/* ---------- Resumen distancia / tiempo ---------- */
+.resumen {
+  display: flex;
+  gap: 0.7rem;
+  padding: 0 1.2rem 0.8rem;
+}
+
+.resumen-item {
+  flex: 1;
+  background: var(--fondo);
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resumen-valor {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--verde-oscuro);
+  line-height: 1.1;
+}
+
+.resumen-etq {
+  font-size: 0.72rem;
+  color: var(--gris);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ---------- Estados ---------- */
+.estado {
+  margin: 0.4rem 1.2rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.estado-cargando {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.estado-vacio {
+  background: var(--fondo);
+  color: var(--gris);
+}
+
+/* ---------- Lista de paradas ---------- */
+.lista {
+  list-style: none;
+  padding: 0.3rem 0.8rem 0.5rem;
+}
+
+.parada {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid var(--linea);
+}
+
+.parada-numero {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--verde);
+  color: var(--blanco);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parada-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.parada-cliente {
+  font-size: 0.92rem;
+}
+
+.parada-ref {
+  font-size: 0.78rem;
+  color: var(--gris);
+}
+
+.btn-cancelar {
+  flex-shrink: 0;
+  border: 1px solid var(--rojo);
+  background: var(--blanco);
+  color: var(--rojo);
+  border-radius: 6px;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-cancelar:hover {
+  background: var(--rojo);
+  color: var(--blanco);
+}
+
+.nota {
+  font-size: 0.78rem;
+  color: var(--gris);
+  line-height: 1.45;
+  padding: 0.6rem 1.2rem 1.2rem;
+}
+
+/* ============================================================
+   MARCADORES DEL MAPA (los pinta MapaChofer con L.divIcon)
+   ============================================================ */
+.marcador {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.marcador-deposito {
+  width: 42px;
+  height: 42px;
+  background: var(--verde-oscuro);
+  font-size: 1.3rem;
+  border: 3px solid var(--blanco);
+}
+
+.marcador-parada {
+  width: 30px;
+  height: 30px;
+  background: var(--ambar);
+  color: var(--blanco);
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 2px solid var(--blanco);
+}
+
+/* ============================================================
+   RESPONSIVE: en pantallas chicas, el panel pasa debajo del mapa
+   ============================================================ */
+@media (max-width: 820px) {
+  .contenido {
+    flex-direction: column;
+  }
+  .mapa-contenedor {
+    height: 55vh;
+    flex: none;
+  }
+  .panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--linea);
+  }
+  .barra-superior {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+}

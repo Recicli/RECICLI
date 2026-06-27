@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datos</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>Impacto y metricas</h1>
+        <p class="lead">Datos conectados directamente a Supabase.</p>
+      </div>
+    </section>
+    <section class="section"><div class="container"><div id="metricCards" class="grid four"></div></div></section>
+    <section class="section soft">
+      <div class="container grid two">
+        <div><h2>Ranking por ciudad</h2><div id="cityRanking" class="table-like"></div></div>
+        <div><h2>Reciclaje por material</h2><div id="materialCharts" class="grid"></div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { renderDatos } from "../js/datos.js";
+    layout("Datos");
+    await renderDatos();
+  </script>
+</body>
+</html>
