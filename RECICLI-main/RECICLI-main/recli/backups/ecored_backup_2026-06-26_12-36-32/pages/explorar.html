@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explorar EcoRed</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>Explorar EcoRed</h1>
+        <p class="lead">Elige el camino circular que necesitas: reciclar materiales o reutilizar productos.</p>
+      </div>
+    </section>
+    <section class="section organic-section">
+      <div class="container grid two">
+        <a class="explore-option" style="--bg:url('../assets/img/explore-recicla.svg')" href="recicla.html">
+          <span class="tag">Modulo local</span>
+          <h2>Recicla</h2>
+          <p>Campanas locales, materiales aceptados, empresas verificadas, eventos de recoleccion y afiliacion.</p>
+          <p><strong>Dato rapido:</strong> el reciclaje funciona por ciudad porque enviar carton o plastico de bajo valor a largas distancias no tiene sentido economico ni ambiental.</p>
+          <span class="btn secondary">Entrar a Recicla</span>
+        </a>
+        <a class="explore-option light" style="--bg:url('../assets/img/explore-reutiliza.svg')" href="reutiliza.html">
+          <span class="tag">Segunda vida</span>
+          <h2>Reutiliza</h2>
+          <p>Compra y vende productos usados, encuentra liquidaciones empresariales y reduce residuos.</p>
+          <p><strong>Dato rapido:</strong> usuarios normales tienen 10 publicaciones gratuitas y las empresas pueden destacar lotes.</p>
+          <span class="btn">Entrar a Reutiliza</span>
+        </a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    layout("Explorar");
+  </script>
+</body>
+</html>

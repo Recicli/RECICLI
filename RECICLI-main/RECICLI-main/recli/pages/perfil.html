@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero compact-hero">
+      <div class="container">
+        <h1>Perfil EcoRed</h1>
+        <p class="lead">Tu reputacion, EcoScore, publicaciones, recojos y recompensas.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div id="guestProfile" class="dashboard-card profile-guest" hidden>
+          <h2>Aun no has iniciado sesion</h2>
+          <p>Inicia en Eco para ver tu perfil, reputacion y accesos personalizados.</p>
+          <a class="btn eco-login-cta" href="login.html">Inicia en Eco</a>
+        </div>
+
+        <div id="profileContent" class="dashboard-layout">
+          <aside class="dashboard-card promoted profile-main">
+            <div class="profile-top">
+              <div id="profileInitials" class="profile-avatar">E</div>
+              <div>
+                <h2 id="profileName">EcoRed</h2>
+                <p id="profileEmail">correo de usuario</p>
+                <span id="profileRole" class="status-badge success">Usuario normal</span>
+              </div>
+            </div>
+            <p id="profileCity">Ciudad: Huanuco</p>
+            <p id="profileDescription">Ciudadano EcoRed.</p>
+            <p id="profileLeaves" class="leaf-rating">🍃🍃🍃🍃🍃</p>
+            <p id="profileScore" class="eco-score">EcoScore: 0 puntos</p>
+            <div class="tag-row">
+              <span class="tag">Marco: Hoja verde</span>
+              <span class="tag">Cupon destacado disponible</span>
+            </div>
+            <div id="profileDashboardLink" class="profile-actions"></div>
+            <button id="pickupDataButton" class="btn" type="button">Completar datos de recojo</button>
+            <button id="logoutButton" class="btn ghost" type="button">Cerrar sesion</button>
+          </aside>
+
+          <div class="dashboard-main">
+            <section class="stats-grid">
+              <article class="metric-card"><strong id="profileActivePosts">--</strong><span>Publicaciones activas</span></article>
+              <article class="metric-card"><strong id="profileRecyclePosts">--</strong><span>Materiales publicados</span></article>
+              <article class="metric-card"><strong id="profileEvents">--</strong><span>Eventos inscritos</span></article>
+              <article class="metric-card"><strong id="profileRewards">3</strong><span>Recompensas disponibles</span></article>
+            </section>
+
+            <section class="dashboard-card">
+              <h2>Accesos rapidos</h2>
+              <div class="action-row">
+                <a class="btn" href="publicar-reciclaje.html">Publicar reciclaje</a>
+                <a class="btn secondary" href="publicar-producto.html">Publicar producto</a>
+                <a class="btn ghost" href="eventos.html">Ver eventos</a>
+                <a class="btn ghost" href="comunidad.html">Ir a comunidad</a>
+                <button class="action-btn ghost" data-profile-action="prepared">Ver mis medallas</button>
+                <button class="action-btn ghost" data-profile-action="prepared">Canjear recompensa</button>
+              </div>
+            </section>
+
+            <section class="panel-grid">
+              <article class="dashboard-card">
+                <h3>Medallas y logros</h3>
+                <p class="eco-score">Guardian del carton · Vecino circular · Aliado verde</p>
+              </article>
+              <article class="dashboard-card">
+                <h3>Empresas recicladoras afiliadas</h3>
+                <p>Modulo listo para mostrar afiliaciones cuando la tabla este disponible.</p>
+              </article>
+              <article class="dashboard-card">
+                <h3>Productos en venta</h3>
+                <p>Modulo listo para filtrar productos por usuario actual.</p>
+              </article>
+              <article class="dashboard-card">
+                <h3>Historial resumido</h3>
+                <p>Modulo listo para conectar publicaciones, eventos inscritos y participaciones.</p>
+              </article>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="profileModal" class="modal" aria-hidden="true"></div>
+  <div id="profileToast" class="toast" role="status"></div>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initPerfil } from "../js/auth.js";
+    layout("Perfil");
+    await initPerfil();
+  </script>
+</body>
+</html>

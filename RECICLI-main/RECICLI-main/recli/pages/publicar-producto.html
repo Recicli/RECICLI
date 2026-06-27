@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicar producto</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero"><div class="container"><h1>Publicar producto usado</h1><p class="lead">Analiza un valor sugerido antes de publicar.</p></div></section>
+    <section class="section">
+      <div class="container estimate-layout">
+        <form id="productoForm" class="card form">
+          <label>Titulo<input name="titulo" required placeholder="Laptop, escritorio, silla..."></label>
+          <div class="split"><label>Categoria<select name="categoria" id="categoriaProducto"><option>Muebles</option><option>Electrodomesticos</option><option>Computadoras</option><option>Celulares</option><option>Herramientas</option><option>Oficina</option><option>Ropa</option><option>Otros</option></select></label><label>Precio deseado<input name="precio" id="precioProducto" type="number" min="0" placeholder="150"></label></div>
+          <div class="split"><label>Estado<select id="estadoProducto"><option>Nuevo sin uso</option><option>Muy bueno</option><option>Bueno</option><option>Usado funcional</option><option>Para reparar</option></select></label><label>Peso aproximado kg<input id="pesoProducto" type="number" min="0" step=".1" placeholder="5"></label></div>
+          <label>Descripcion<textarea name="descripcion" required></textarea></label>
+          <div class="split"><label>Ciudad<input name="ciudad" value="Huanuco"></label><label>Zona<input placeholder="Centro"></label></div>
+          <div class="split"><label>Metodo de entrega<select><option>Punto publico</option><option>Recojo coordinado</option><option>Delivery local</option></select></label><label>Metodo de pago<select><option>Yape fase futura</option><option>Plin fase futura</option><option>Transferencia fase futura</option><option>Tarjeta fase futura</option></select></label></div>
+          <label>Fotos<input id="fotoProducto" type="file" accept="image/*" multiple></label>
+          <div id="previewProducto" class="image-preview" hidden></div>
+          <div class="mobile-estimate-slot"></div>
+          <button class="btn secondary" id="analizarProducto" type="button">Analizar</button>
+          <label><input type="checkbox" required> Acepto recomendaciones de seguridad</label>
+          <button class="btn" type="submit">Publicar producto</button>
+          <p id="productoMessage" class="mini-result"></p>
+        </form>
+        <aside class="estimate-side">
+          <article class="notice"><h3>Advertencia antiestafa</h3><p>Revisa el producto antes de pagar, evita adelantos sospechosos, prefiere lugares publicos y revisa la reputacion del vendedor.</p></article>
+          <article class="card estimate-card" id="estimateProducto"><h3>Estimacion EcoRed</h3><p>Completa categoria, estado y peso, luego presiona Analizar.</p></article>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { getSupabaseUser } from "../js/supabaseClient.js";
+    import { createProducto } from "../js/supabaseData.js";
+
+    layout("Publicar producto");
+    const base = { Muebles: 90, Electrodomesticos: 180, Computadoras: 650, Celulares: 420, Herramientas: 120, Oficina: 110, Ropa: 25, Otros: 60 };
+    const factor = { "Nuevo sin uso": 1, "Muy bueno": .82, Bueno: .65, "Usado funcional": .48, "Para reparar": .22 };
+    const preview = document.querySelector("#previewProducto");
+    const estimate = document.querySelector("#estimateProducto");
+
+    document.querySelector("#fotoProducto").addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      preview.hidden = false;
+      preview.style.backgroundImage = `url('${URL.createObjectURL(file)}')`;
+    });
+
+    document.querySelector("#analizarProducto").addEventListener("click", () => {
+      const categoria = document.querySelector("#categoriaProducto").value;
+      const estado = document.querySelector("#estadoProducto").value;
+      const peso = Number(document.querySelector("#pesoProducto").value || 0);
+      const sugerido = (base[categoria] || 60) * (factor[estado] || .5) + peso * 2;
+      estimate.innerHTML = `<h3>Estimacion EcoRed</h3><p>Categoria: <strong>${categoria}</strong></p><p>Estado: <strong>${estado}</strong></p><p>Precio sugerido: <strong>S/ ${(sugerido * .85).toFixed(0)} - S/ ${(sugerido * 1.15).toFixed(0)}</strong></p><small>Referencia local segun categoria, estado y peso.</small>`;
+    });
+
+    document.querySelector("#productoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = document.querySelector("#productoMessage");
+      const user = await getSupabaseUser();
+      if (!user) { message.textContent = "Inicia sesion para publicar."; return; }
+      const form = new FormData(event.currentTarget);
+      try {
+        await createProducto(user.id, { titulo: form.get("titulo"), categoria: form.get("categoria"), descripcion: form.get("descripcion"), precio: Number(form.get("precio") || 0), ciudad: form.get("ciudad"), imagen: "../assets/img/product-desk.svg" });
+        message.textContent = "Producto publicado en Supabase.";
+        event.currentTarget.reset();
+        preview.hidden = true;
+      } catch (error) {
+        message.textContent = `No se pudo publicar: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
