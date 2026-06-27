@@ -10,7 +10,6 @@ export async function initComunidad() {
   const modal = document.querySelector("#postModal");
   const openModal = document.querySelector("#openPostModal");
   const closeModal = document.querySelector("#closePostModal");
-  const result = document.querySelector("#gameResult");
 
   try {
     posts = mapRemotePosts(await fetchCommunityPosts());
@@ -49,14 +48,6 @@ export async function initComunidad() {
     const index = Number(like.dataset.like);
     posts[index].likes += 1;
     renderPosts(list);
-  });
-
-  document.querySelector("#gameOptions")?.addEventListener("click", (event) => {
-    const btn = event.target.closest("button");
-    if (!btn) return;
-    result.textContent = btn.dataset.answer === "plastico"
-      ? "Correcto: botella PET va a plastico. +25 EcoScore"
-      : "Casi. La botella PET corresponde a plastico.";
   });
 }
 

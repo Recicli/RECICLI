@@ -26,18 +26,8 @@
             <p class="leaf-score">🍃🍃🍃🍃🍃</p>
             <div class="tag-row"><span class="tag">Guardian del carton</span><span class="tag">Vecina circular</span></div>
           </article>
-          <article class="card">
-            <h3>Mini juego</h3>
-            <p>Clasifica el residuo: botella PET</p>
-            <div id="gameOptions" class="mini-game-options compact-game">
-              <button class="btn secondary" data-answer="plastico">Plastico</button>
-              <button class="btn secondary" data-answer="papel">Papel/carton</button>
-              <button class="btn secondary" data-answer="vidrio">Vidrio</button>
-              <button class="btn secondary" data-answer="metal">Metal</button>
-              <button class="btn secondary" data-answer="organico">Organico</button>
-            </div>
-            <p id="gameResult" class="mini-result"></p>
-          </article>
+         
+         
         </aside>
 
         <section class="community-feed">
@@ -50,7 +40,21 @@
         </section>
       </div>
     </section>
+
+  <section class="section game-section">
+      <div class="container">
+        <article class="card game-card">
+          <div class="game-card-header">
+            <h2>🎮 Juega y Aprende</h2>
+            <p>Esquiva los residuos y aprende a clasificarlos mientras te diviertes.</p>
+            <button id="btnIniciarJuego" class="btn yellow">🎮 Jugar Ahora</button>
+          </div>
+          <div id="gameContainer" class="game-container-full"></div>
+        </article>
+      </div>
+    </section>
   </main>
+
 
   <dialog id="postModal" class="post-modal">
     <form id="postForm" class="form post-modal-card">
@@ -82,6 +86,18 @@
     import { initComunidad } from "../js/comunidad.js";
     layout("Comunidad");
     initComunidad();
+
+    document.querySelector("#btnIniciarJuego").addEventListener("click", async () => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "../css/juego.css";
+      document.head.appendChild(link);
+
+      const { initJuego } = await import("../js/juego.js");
+      initJuego("#gameContainer");
+
+      document.querySelector(".game-card-header").style.display = "none";
+    });
   </script>
 </body>
 </html>

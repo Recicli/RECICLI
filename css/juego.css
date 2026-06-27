@@ -1,7 +1,7 @@
 .game-wrapper {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 500px;
   margin: 0 auto;
   background: #1a1a2e;
   border-radius: 18px;
@@ -151,6 +151,15 @@
   background: rgba(255,255,255,0.15);
   color: #fff;
   border: 1px solid rgba(255,255,255,0.25);
+}
+
+.game-btn.exit {
+  background: transparent;
+  color: #f44336;
+  border: 1px solid rgba(244,67,54,0.4);
+}
+.game-btn.exit:hover {
+  background: rgba(244,67,54,0.15);
 }
 
 .game-hud {

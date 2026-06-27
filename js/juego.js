@@ -1,5 +1,5 @@
-const CANVAS_W = 420;
-const CANVAS_H = 600;
+const CANVAS_W = 500;
+const CANVAS_H = 650;
 
 const RESIDUOS = [
   { emoji: "🧴", nombre: "Botella PET", color: "#42A5F5", stroke: "#1E88E5", shape: "rect", w: 20, h: 36, categoria: "plastico" },
@@ -132,7 +132,13 @@ function onTouchStart(e) {
   e.preventDefault();
   if (estado !== "PLAYING") return;
   const rect = canvas.getBoundingClientRect();
-  jugador.x = (e.touches[0].clientX - rect.left) * (CANVAS_W / rect.width);
+  const x = (e.touches[0].clientX - rect.left) * (CANVAS_W / rect.width);
+  const y = (e.touches[0].clientY - rect.top) * (CANVAS_H / rect.height);
+  if (x > CANVAS_W - 50 && y < 38) {
+    exitGame();
+    return;
+  }
+  jugador.x = x;
 }
 
 function onTouchMove(e) {
@@ -143,8 +149,15 @@ function onTouchMove(e) {
   jugador.x = (e.touches[0].clientX - rect.left) * scaleX;
 }
 
-function onCanvasClick() {
+function onCanvasClick(e) {
   if (estado === "PLAYING") {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (CANVAS_W / rect.width);
+    const y = (e.clientY - rect.top) * (CANVAS_H / rect.height);
+    if (x > CANVAS_W - 50 && y < 38) {
+      exitGame();
+      return;
+    }
     sfx.pausa();
     estado = "PAUSE";
     mostrarOverlayPausa();
@@ -463,7 +476,19 @@ function render() {
 
   ctx.textAlign = "right";
   ctx.fillStyle = "#fff";
-  ctx.fillText(`⏱ ${Math.ceil(timerNivel)}s`, CANVAS_W - 14, 16);
+  ctx.fillText(`⏱ ${Math.ceil(timerNivel)}s`, CANVAS_W - 40, 16);
+
+  ctx.save();
+  ctx.fillStyle = "rgba(244,67,54,0.25)";
+  ctx.beginPath();
+  ctx.arc(CANVAS_W - 18, 14, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.font = "bold 22px Montserrat, sans-serif";
+  ctx.fillStyle = "#f44336";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("✕", CANVAS_W - 18, 14);
 
   ctx.fillStyle = "#f44336";
   ctx.fillText("♥".repeat(vidas), CANVAS_W - 14, 34);
@@ -547,6 +572,7 @@ function mostrarMenu() {
         <p style="font-size:0.8em; opacity:0.6;">Nivel desbloqueado: ${unlockedLevel}/10</p>
         <button class="game-btn play" id="btnPlay">🎮 Jugar</button>
         <button class="game-btn menu" id="btnRanking">🏆 Ranking</button>
+        <button class="game-btn exit" id="btnExit">🚪 Salir del Juego</button>
         <div class="instructions">
           Mueve el mouse, flechas ←→ o desliza para esquivar<br>
           Recoge ❤️ para recuperar vida
@@ -563,6 +589,19 @@ function mostrarMenu() {
     sfx.click();
     mostrarRanking();
   });
+  containerEl.querySelector("#btnExit").addEventListener("click", () => {
+    sfx.click();
+    exitGame();
+  });
+}
+
+function exitGame() {
+  cancelAnimationFrame(animId);
+  estado = "MENU";
+  containerEl.innerHTML = "";
+  containerEl.style.display = "none";
+  const header = document.querySelector(".game-card-header");
+  if (header) header.style.display = "";
 }
 
 function iniciarJuego() {
@@ -613,6 +652,10 @@ function mostrarCountdown(num) {
     </div>`;
   canvas = containerEl.querySelector("canvas");
   ctx = canvas.getContext("2d");
+  canvas.addEventListener("mousemove", onMouseMove);
+  canvas.addEventListener("click", onCanvasClick);
+  canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+  canvas.addEventListener("touchstart", onTouchStart, { passive: false });
   sfx.countdown(num === 1);
   if (num > 1) {
     setTimeout(() => mostrarCountdown(num - 1), 800);
@@ -782,6 +825,7 @@ async function mostrarGameOver() {
         <div class="game-ranking">${rankingHTML}</div>
         <button class="game-btn retry" id="btnRetry">🔄 Reintentar</button>
         <button class="game-btn menu" id="btnMenu">📋 Menú</button>
+        <button class="game-btn exit" id="btnExitGO">🚪 Salir</button>
       </div>
     </div>`;
 
@@ -792,6 +836,10 @@ async function mostrarGameOver() {
   containerEl.querySelector("#btnMenu").addEventListener("click", () => {
     sfx.click();
     mostrarMenu();
+  });
+  containerEl.querySelector("#btnExitGO").addEventListener("click", () => {
+    sfx.click();
+    exitGame();
   });
 }
 
@@ -863,6 +911,7 @@ function mostrarOverlayPausa() {
         <button class="game-btn play" id="btnResume">▶️ Continuar</button>
         <button class="game-btn retry" id="btnRestart">🔄 Reiniciar</button>
         <button class="game-btn menu" id="btnMenuPause">📋 Menú</button>
+        <button class="game-btn exit" id="btnExitPause">🚪 Salir</button>
       </div>
     </div>`;
 
@@ -881,6 +930,10 @@ function mostrarOverlayPausa() {
   containerEl.querySelector("#btnMenuPause").addEventListener("click", () => {
     sfx.click();
     mostrarMenu();
+  });
+  containerEl.querySelector("#btnExitPause").addEventListener("click", () => {
+    sfx.click();
+    exitGame();
   });
 }
 
