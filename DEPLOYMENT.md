@@ -4,10 +4,20 @@
 
 EcoRed es HTML, CSS y JavaScript puro, por lo que puede publicarse directo en GitHub Pages.
 
-1. Sube la carpeta `recli` al repositorio.
+1. Sube el contenido de la raiz del repositorio `HACAKTON1`.
 2. En GitHub activa `Settings > Pages`.
-3. Usa `Deploy from a branch` y selecciona la rama principal con la carpeta raiz del proyecto.
-4. Verifica que `.nojekyll` exista para que GitHub Pages no modifique rutas.
+3. Recomendado: usa GitHub Actions con `.github/workflows/deploy-pages.yml`.
+4. Alternativa: usa `Deploy from a branch` y selecciona la rama principal con la carpeta raiz `/`.
+5. Verifica que `index.html` y `.nojekyll` esten en la raiz del repositorio.
+
+La app publica solo estos directorios/archivos:
+
+- `index.html`
+- `assets/`
+- `css/`
+- `js/`
+- `pages/`
+- `.nojekyll`
 
 ## Supabase
 
