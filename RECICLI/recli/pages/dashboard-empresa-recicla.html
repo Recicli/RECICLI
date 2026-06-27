@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Empresa Recicla</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero"><div class="container"><h1>Dashboard Empresa Recicla</h1><p class="lead">Control operativo para campañas, afiliados, rutas y material reciclado.</p></div></section>
+    <section class="section">
+      <div class="container dashboard-shell">
+        <aside class="sidebar"><a href="#resumen">Resumen</a><a href="#operaciones">Operaciones</a><a href="#campanas">Campanas</a><a href="#afiliados">Afiliados</a></aside>
+        <div class="grid">
+          <section id="resumen">
+            <div id="dashboardStats" class="dashboard-grid"></div>
+          </section>
+
+          <section id="operaciones" class="dashboard-panel">
+            <div>
+              <span class="tag">Centro operativo</span>
+              <h2>Gestion de reciclaje local</h2>
+              <p>Organiza campañas, afiliados y recojos desde un solo panel. Las rutas quedan listas para conectarse con mapas y logística cuando el backend tenga geolocalización completa.</p>
+            </div>
+            <div class="dashboard-actions">
+              <button class="btn">Crear campaña</button>
+              <button class="btn secondary">Afiliar recicladores</button>
+              <button class="btn ghost">Ver rutas</button>
+            </div>
+          </section>
+
+          <section id="campanas">
+            <h2>Campañas y rutas activas</h2>
+            <div id="rutasRecicla" class="grid two"></div>
+          </section>
+
+          <section id="afiliados" class="dashboard-panel soft">
+            <div>
+              <span class="tag">Afiliados</span>
+              <h2>Recojos programados por usuarios</h2>
+              <p>Cuando un usuario afiliado confirme el día de recojo, la empresa recibirá la dirección exacta, hora disponible y observaciones para coordinar directamente.</p>
+            </div>
+            <div class="pickup-card">
+              <strong>Solicitud de ubicación</strong>
+              <p>Botón preparado para abrir el formulario de dirección, fecha y hora de recojo.</p>
+              <button class="btn location-button">Ubicación de recojo</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initDashboard } from "../js/dashboard.js";
+    layout("Dashboard Recicla");
+    await initDashboard();
+  </script>
+</body>
+</html>

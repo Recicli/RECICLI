@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main class="auth-main">
+    <section class="auth-shell register-shell">
+      <div class="auth-panel">
+        <span class="eyebrow">Crea tu cuenta</span>
+        <h1>Elige tu perfil</h1>
+        <p class="lead">Primero dinos que tipo de cuenta necesitas. Luego EcoRed adapta el formulario.</p>
+
+        <div class="account-type-grid">
+          <button class="account-type-card" type="button" data-account-type="usuario"><strong>Persona</strong><span>Recicla, compra, vende y participa.</span></button>
+          <button class="account-type-card" type="button" data-account-type="empresa"><strong>Empresa</strong><span>Recicla, Reutiliza o ambos modulos.</span></button>
+          <button class="account-type-card" type="button" data-account-type="municipalidad"><strong>Municipalidad</strong><span>Convocatorias y campanas locales.</span></button>
+          <button class="account-type-card" type="button" data-account-type="ong"><strong>ONG</strong><span>Eventos, comunidad y voluntariado.</span></button>
+          <button class="account-type-card" type="button" data-account-type="universidad"><strong>Universidad</strong><span>Campanas y comunidad academica.</span></button>
+          <button class="account-type-card" type="button" data-account-type="reciclador"><strong>Reciclador</strong><span>Afiliacion y rutas de recojo.</span></button>
+        </div>
+
+        <div id="registroFormPanel" hidden>
+          <form id="registroForm" class="form auth-form">
+            <input id="tipoCuenta" name="tipoCuenta" type="hidden" value="usuario">
+
+            <div id="personFields">
+              <div class="split"><label>Nombre<input name="nombre"></label><label>Apellido<input name="apellido"></label></div>
+            </div>
+
+            <div id="companyFields" hidden>
+              <label>Nombre de empresa<input name="nombreEmpresa" placeholder="Nombre comercial"></label>
+              <div class="split"><label>RUC<input name="ruc" maxlength="11" placeholder="20123456789"></label><label>Modulo<select name="moduloEmpresa"><option value="recicla">Reciclaje</option><option value="reutiliza">Reutilizacion</option><option value="ambos">Ambos</option></select></label></div>
+              <label>Descripcion de actividad<textarea name="descripcionEmpresa" placeholder="Cuéntanos que hace tu empresa, materiales o productos que trabajara y ciudad de operacion"></textarea></label>
+              <p class="notice">Si eliges ambos modulos, cada uno queda pendiente de verificacion en el panel administrador.</p>
+            </div>
+
+            <div id="institutionNote" class="notice" hidden>
+              Las instituciones pueden crear convocatorias en Recicla. Para ventas masivas en Reutiliza, deben pasar por verificacion comercial.
+            </div>
+
+            <label>Correo<input name="email" type="email" required></label>
+            <label>Contrasena<input name="password" type="password" minlength="6" required></label>
+            <div class="split"><label>Ciudad/localidad<input name="ciudad" value="Huanuco"></label><label>Celular<input name="celular" placeholder="999 999 999"></label></div>
+
+            <button class="btn eco-login-cta" type="submit">Crear cuenta</button>
+            <p id="registroMessage" class="mini-result"></p>
+          </form>
+          <div class="auth-switch"><span>Ya tienes cuenta?</span><a class="btn secondary" href="login.html">Inicia sesion</a></div>
+        </div>
+      </div>
+
+      <aside class="auth-visual">
+        <div class="auth-carousel">
+          <article style="--bg:url('../assets/img/explore-recicla.svg')"><strong>Recicla</strong><span>Campanas y rutas verificadas</span></article>
+          <article style="--bg:url('../assets/img/explore-reutiliza.svg')"><strong>Reutiliza</strong><span>Productos y liquidaciones</span></article>
+          <article style="--bg:url('../assets/img/event-school.svg')"><strong>Comunidad</strong><span>Eventos y EcoScore</span></article>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initRegistro } from "../js/auth.js";
+    layout("Registro");
+    initRegistro();
+  </script>
+</body>
+</html>

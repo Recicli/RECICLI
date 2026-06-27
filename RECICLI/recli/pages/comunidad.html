@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunidad</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <header class="navbar" data-nav></header>
+  <main>
+    <section class="page-hero compact-hero">
+      <div class="container">
+        <h1>Comunidad EcoRed</h1>
+        <p class="lead">Comparte logros, eventos, anuncios y avances ambientales con tu ciudad.</p>
+      </div>
+    </section>
+
+    <section class="section community-layout-section">
+      <div class="container community-layout">
+        <aside class="community-side">
+          <article class="card eco-score-card">
+            <h3>Tu EcoScore</h3>
+            <strong>1240 puntos</strong>
+            <p class="leaf-score">🍃🍃🍃🍃🍃</p>
+            <div class="tag-row"><span class="tag">Guardian del carton</span><span class="tag">Vecina circular</span></div>
+          </article>
+
+        </aside>
+
+        <section class="community-feed">
+          <div class="post-composer-card">
+            <div class="avatar">E</div>
+            <button id="openPostModal" class="composer-trigger">Que accion circular quieres compartir?</button>
+          </div>
+          <h2>Publicaciones destacadas</h2>
+          <div id="communityPosts" class="community-posts"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section game-section">
+      <div class="container">
+        <article class="card game-card">
+          <div class="game-card-header">
+            <h2>🎮 Juega y Aprende</h2>
+            <p>Esquiva los residuos y aprende a clasificarlos mientras te diviertes.</p>
+            <button id="btnIniciarJuego" class="btn yellow">🎮 Jugar Ahora</button>
+          </div>
+          <div id="gameContainer" class="game-container-full"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="postModal" class="post-modal">
+    <form id="postForm" class="form post-modal-card">
+      <div class="modal-head">
+        <h3>Crear publicacion</h3>
+        <button type="button" id="closePostModal" class="icon-close" aria-label="Cerrar">×</button>
+      </div>
+      <label>Tipo
+        <select name="tipo">
+          <option>Logro</option>
+          <option>Evento</option>
+          <option>Reciclaje</option>
+          <option>Reutilizacion</option>
+          <option>Anuncio</option>
+          <option>General</option>
+        </select>
+      </label>
+      <label>Mensaje
+        <textarea name="post" required placeholder="Comparte tu avance circular"></textarea>
+      </label>
+      <button class="btn eco-login-cta" type="submit">Publicar</button>
+    </form>
+  </dialog>
+
+  <footer class="footer" data-footer></footer>
+  <div data-chatbot></div>
+  <script type="module">
+    import { layout } from "../js/script.js";
+    import { initComunidad } from "../js/comunidad.js";
+    layout("Comunidad");
+    initComunidad();
+
+    document.querySelector("#btnIniciarJuego")?.addEventListener("click", async () => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "../css/juego.css";
+      document.head.appendChild(link);
+      const { initJuego } = await import("../js/juego.js");
+      initJuego("#gameContainer");
+      document.querySelector("#btnIniciarJuego").style.display = "none";
+    });
+  </script>
+</body>
+</html>
